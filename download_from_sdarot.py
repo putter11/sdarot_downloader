@@ -15,7 +15,7 @@ class SdarotDownloader(object):
     COOKIE_NAME = "Sdarot"
     URL_REG = 'videojs_html5_api.*src="//(.*)uid='
     BLOCK_SIZE = 1024
-    URL = 'https://sdarot.world/watch/{}/season/{}/episode/{}'
+    URL = 'https://sdarot.world/watch/{}/season/{}/episode/{}.mp4'
     PATH = "/home/putter/Videos"
     FILE_NAME = "{} season {} episode {}"
     SERIES_NAME_INDEX = 0
@@ -23,12 +23,12 @@ class SdarotDownloader(object):
     SEASONS_INDEX = 2
     EPISODES_INDEX = 3
 
-    def __init__(self, driver, series_name, series_number, episodes="1", seasons="1"):
+    def __init__(self, driver, series_list):
         self.driver = driver
-        self.series_name = series_name
-        self.series_number = series_number
-        self.episodes = self._parse_episode_season(episodes)
-        self.seasons = self._parse_episode_season(seasons)
+        self.series_name = str(series_list[self.SERIES_NAME_INDEX])
+        self.series_number = str(series_list[self.SERIES_NUMBER_INDEX])
+        self.seasons = self._parse_episode_season(str(series_list[self.SEASONS_INDEX]))
+        self.episodes = self._parse_episode_season(str(series_list[self.EPISODES_INDEX]))
         self._handle_dir()
         self._download()
     
@@ -41,6 +41,7 @@ class SdarotDownloader(object):
         for season in self.seasons:
             for episode in self.episodes:
                 self.url = self.URL.format(self.series_number, season, episode)
+                print self.url
                 self.file_path = os.path.join(self.dir, self.FILE_NAME.format(self.series_name, season, episode))
                 if self._handle_page():
                     self._find_url()
@@ -62,7 +63,6 @@ class SdarotDownloader(object):
             self.video_url =  "https://" + video_url[0].replace("amp;", "")
             print "found_url"
             self._download_video()
-
         else:
             print "video not found"
        
@@ -77,13 +77,13 @@ class SdarotDownloader(object):
                 t.update(len(data))
     
     def _parse_episode_season(self, to_parse):
-        return range(int(to_parse.split('-')[0]), int(to_parse.split('-')[1]) + 1) if to_parse.count('-') else to_parse
+        return range(int(to_parse.split('-')[0]), int(to_parse.split('-')[1]) + 1) if to_parse.count('-') else [to_parse]
 
 
 
 def open_excel(path):
-    excel = pd.read_excel(path)
-    return [list(i) for i in excel] 
+    excel = pd.read_excel(path, )
+    return [list(i) for i in excel.values] 
 
 
 def main():
@@ -91,9 +91,9 @@ def main():
     print "opened driver"
     series_number = "4497"
     series_list = open_excel(EXCEL_PATH)
-    #for i in series_list:
-        #SdarotDownloader(driver=dri) 
-    SdarotDownloader(driver=dri, series_number=series_number, series_name="backugan", episodes="10-15")
+    for i in series_list:
+        print i
+        SdarotDownloader(driver=dri, series_list = i) 
     dri.close()
 
 if __name__ == "__main__":
