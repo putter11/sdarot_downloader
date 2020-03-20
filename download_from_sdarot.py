@@ -17,8 +17,8 @@ class SdarotDownloader(object):
     COOKIE_NAME = "Sdarot"
     URL_REG = 'videojs_html5_api.*src="//(.*)uid='
     BLOCK_SIZE = 1024
-    URL = 'https://sdarot.world/watch/{}/season/{}/episode/{}.mp4'
-    FILE_NAME = "{} season {} episode {}"
+    URL = 'https://sdarot.world/watch/{}/season/{}/episode/{}'
+    FILE_NAME = "{} season {} episode {}.mp4"
     SERIES_NAME_INDEX = 0
     SERIES_NUMBER_INDEX = 1
     SEASONS_INDEX = 2
@@ -54,7 +54,7 @@ class SdarotDownloader(object):
                 if self._handle_page():
                     self._find_url()
                 else:
-                    print "episode doesn't exist"
+                    print "Episode doesn't exist"
 
     def _handle_page(self):
         """
@@ -63,7 +63,10 @@ class SdarotDownloader(object):
         self.driver.get(self.url)
         if self.driver.current_url != self.url:
             return 0
-        time.sleep(40)
+        time.sleep(32)
+        if self.driver.execute_script("return timeout") > 1:
+            self.driver.execute_script("window.timeout = 0.1")
+        time.sleep(8)
         self.cookie = {self.COOKIE_NAME:self.driver.get_cookie(self.COOKIE_NAME)['value']}
         self.page_content = self.driver.page_source
         return 1
@@ -75,16 +78,16 @@ class SdarotDownloader(object):
         video_url = re.findall(self.URL_REG, self.page_content)
         if video_url:
             self.video_url =  "https://" + video_url[0].replace("amp;", "")
-            print "found_url"
+            print "Found url"
             self._download_video()
         else:
-            print "video not found"
+            print "Video not found"
        
     def _download_video(self):
         """
         Donloads the video.
         """
-        print "started downloading"
+        print "Started downloading"
         video = requests.get(self.video_url, cookies=self.cookie, stream=True)
         total = int(video.headers.get('content-length', 0))
         t = tqdm(total=total, unit="iB", unit_scale=True)
@@ -92,6 +95,7 @@ class SdarotDownloader(object):
             for data in video.iter_content(self.BLOCK_SIZE):
                 w.write(data)
                 t.update(len(data))
+        print
     
     def _parse_episode_season(self, to_parse):
         """
