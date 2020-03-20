@@ -17,7 +17,7 @@ Edit the excel for the episodes that you want to download.
 In the excel there is an example for a valid download requesrt.
 The series number is the number you see in the url of a series page in sdarot.
 The series name is only for the name that will be given to the files you download so you can write there whatever you want. (for example GOT instead of Game of Thrones).
-The seasons and episodes accepts the value in pattern x-y and will download from episode/season x to y include.
+The seasons and episodes accepts the value in the format x-y and will download from episode/season x to y.
 If you want to download several seasons with differnt number of episodes just write the highest episode number as y, the program will just continue if it can't find a specific episode.
 
 As default the program saves the downloaded videos in the current folder. If you want to change that you can use the flag -v and write the path where you would like the videos to be saved.
