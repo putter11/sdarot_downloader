@@ -1,13 +1,15 @@
 # Code to download episodes from sdarot
 Hello!
 
-To use the code plaese first install selenium, tqdm and pandas running:
+To use the code plaese first install selenium, tqdm and pandas and requests running:
 
 pip install selenium
 
 pip install tqdm
 
-pip install pandas.
+pip install pandas
+
+pip install requests
 
 Also, you need to download from here https://github.com/mozilla/geckodriver/releases the geckodriver for your system, unzip it and put it in a folder which is in your PATH.
 
