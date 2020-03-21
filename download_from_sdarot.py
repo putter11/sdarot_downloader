@@ -52,7 +52,14 @@ class SdarotDownloader(object):
                 print self.url
                 self.file_path = os.path.join(self.dir, self.FILE_NAME.format(self.series_name, season, episode))
                 if self._handle_page():
-                    self._find_url()
+                    if self._find_url():
+                        self._download_video()
+                    else:
+                        time.sleep(10)
+                        if self._find_url():
+                            self._download_video()
+                        else:
+                            print "Video not found"
                 else:
                     print "Episode doesn't exist"
 
@@ -66,7 +73,7 @@ class SdarotDownloader(object):
         time.sleep(32)
         if self.driver.execute_script("return timeout") > 1:
             self.driver.execute_script("window.timeout = 0.1")
-        time.sleep(8)
+        time.sleep(5)
         self.cookie = {self.COOKIE_NAME:self.driver.get_cookie(self.COOKIE_NAME)['value']}
         self.page_content = self.driver.page_source
         return 1
@@ -79,9 +86,9 @@ class SdarotDownloader(object):
         if video_url:
             self.video_url =  "https://" + video_url[0].replace("amp;", "")
             print "Found url"
-            self._download_video()
+            return 1
         else:
-            print "Video not found"
+            return 0
        
     def _download_video(self):
         """
@@ -95,6 +102,7 @@ class SdarotDownloader(object):
             for data in video.iter_content(self.BLOCK_SIZE):
                 w.write(data)
                 t.update(len(data))
+        t.close()
         print
     
     def _parse_episode_season(self, to_parse):
@@ -109,7 +117,7 @@ def open_excel(path):
     """
     Opens the excel file.
     """
-    excel = pd.read_excel(path, )
+    excel = pd.read_excel(path, na_filter=False)
     return [list(i) for i in excel.values] 
 
 
