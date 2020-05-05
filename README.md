@@ -1,7 +1,7 @@
 # Code to download episodes from sdarot
 Hello!
 
-To use the code plaese first install selenium, tqdm and pandas and requests running:
+To use the code plaese first install selenium, tqdm, pandas and requests running:
 
 pip install selenium
 
